@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Paper, TextField, Button, Grid, MenuItem, Typography, Snackbar, Alert, useTheme } from '@mui/material';
-import{api} from '../../services/api';
+import { userAPI } from '../../services/api';
 
 function UserProfile() {
   const theme = useTheme();
   const [profile, setProfile] = useState({
-    name: '',
+    username: '',
     email: '',
     age: '',
     weight: '',
@@ -29,7 +29,7 @@ function UserProfile() {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await api.get('/profile/');
+      const response = await userAPI.getProfile();
       if (response.data) {
         setProfile(response.data);
       }
@@ -41,7 +41,7 @@ function UserProfile() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!profile.name) newErrors.name = 'Name is required';
+    if (!profile.username) newErrors.username = 'Name is required';
     if (!profile.email) newErrors.email = 'Email is required';
     if (profile.age && (isNaN(profile.age) || profile.age < 0)) {
       newErrors.age = 'Please enter a valid age';
@@ -73,7 +73,7 @@ function UserProfile() {
     setApiError(null);
 
     try {
-      const response = await api.put('/profile/', profile);
+      const response = await userAPI.updateProfile(profile);
       if (response.status === 200) {
         setShowSuccess(true);
         // Refresh profile data
@@ -81,7 +81,16 @@ function UserProfile() {
       }
     } catch (error) {
       console.error('Error saving profile:', error);
-      setApiError(error.response?.data?.message || 'Failed to save profile');
+      const respData = error.response?.data;
+      if (respData && typeof respData === 'object') {
+        // Map field errors returned from server (e.g., { username: ['This field is required.'] })
+        const mappedErrors = Object.fromEntries(
+          Object.entries(respData).map(([k, v]) => [k, Array.isArray(v) ? v.join(' ') : String(v)])
+        );
+        setErrors(mappedErrors);
+      } else {
+        setApiError(respData?.message || 'Failed to save profile');
+      }
     } finally {
       setLoading(false);
     }
@@ -107,11 +116,11 @@ function UserProfile() {
               <TextField
                 fullWidth
                 label="Name"
-                name="name"
-                value={profile.name}
+                name="username"
+                value={profile.username}
                 onChange={handleChange}
-                error={!!errors.name}
-                helperText={errors.name}
+                error={!!errors.username}
+                helperText={errors.username}
               />
             </Grid>
             

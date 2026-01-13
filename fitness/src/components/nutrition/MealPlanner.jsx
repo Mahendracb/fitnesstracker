@@ -56,7 +56,8 @@ function MealPlanner() {
   const [formData, setFormData] = useState({
     food: '',
     calories: '',
-    mealType: 'Breakfast'
+    mealType: 'Breakfast',
+    notes: ''
   });
 
   useEffect(() => {
@@ -82,14 +83,16 @@ function MealPlanner() {
       setFormData({
         food: meal.food,
         calories: meal.calories,
-        mealType: meal.mealType
+        mealType: meal.meal_type,
+        notes: meal.notes || ''
       });
     } else {
       setEditingMeal(null);
       setFormData({
         food: '',
         calories: '',
-        mealType: 'Breakfast'
+        mealType: 'Breakfast',
+        notes: ''
       });
     }
     setOpenDialog(true);
@@ -101,7 +104,8 @@ function MealPlanner() {
     setFormData({
       food: '',
       calories: '',
-      mealType: 'Breakfast'
+      mealType: 'Breakfast',
+      notes: ''
     });
   };
 
@@ -234,7 +238,7 @@ function MealPlanner() {
                     </Typography>
                     <List>
                       {meals
-                        .filter(meal => meal.mealType === mealType)
+                        .filter(meal => meal.meal_type === mealType)
                         .map(meal => (
                           <ListItem 
                             key={meal.id}

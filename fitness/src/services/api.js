@@ -40,8 +40,9 @@ export const authAPI = {
         username: userData.username,
         email: userData.email,
         password: userData.password,
-        first_name: userData.first_name || '',
-        last_name: userData.last_name || ''
+        password2: userData.password2,
+        // first_name: userData.first_name || '',
+        // last_name: userData.last_name || ''
       };
 
       const response = await api.post('/register/', registrationData);
@@ -133,7 +134,7 @@ export const dashboardAPI = {
 
 // Add userAPI to your existing API services
 export const userAPI = {
-  getProfile: () => api.get('/users/profile/'),
-  updateProfile: (profileData) => api.put('/users/profile/', profileData),
+  getProfile: () => api.get('/profile/'),
+  updateProfile: (profileData) => api.put('/profile/', profileData),
 };
 
