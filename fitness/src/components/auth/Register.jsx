@@ -201,7 +201,7 @@
 // }
 
 // export default Register;
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { authAPI } from '../../services/api';
 import {
@@ -225,13 +225,26 @@ function Register({ setIsAuthenticated }) {
     password2: '',
   });
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (success) {
+      setError(null);
+    }
+  }, [success]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      setLoading(false);
+      return;
+    }
 
     if (formData.password !== formData.password2) {
       setError('Passwords do not match');
@@ -249,18 +262,11 @@ function Register({ setIsAuthenticated }) {
 
       const registerResponse = await authAPI.register(registerData);
 
-      if (registerResponse.data) {
-        const loginResponse = await authAPI.login({
-          username: formData.username,
-          password: formData.password
-        });
-
-        if (loginResponse.data.access) {
-          localStorage.setItem('fitnessToken', loginResponse.data.access);
-          localStorage.setItem('refreshToken', loginResponse.data.refresh);
-          setIsAuthenticated(true);
-          navigate('/dashboard');
-        }
+      if (registerResponse) {
+        setSuccess(true);
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
       }
     } catch (err) {
       if (err.response?.data) {
@@ -295,7 +301,13 @@ function Register({ setIsAuthenticated }) {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        {success && (
+          <Alert severity="success" sx={{ width: '100%', mt: 2 }}>
+            Registration successful! Redirecting to login page...
+          </Alert>
+        )}
+
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }} disabled={success}>
           <MuiGrid container spacing={2}>
             <MuiGrid xs={12}>
               <TextField
@@ -353,9 +365,9 @@ function Register({ setIsAuthenticated }) {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            disabled={loading}
+            disabled={loading || success}
           >
-            {loading ? <CircularProgress size={24} /> : 'Sign Up'}
+            {loading ? <CircularProgress size={24} /> : success ? 'Registration Complete' : 'Sign Up'}
           </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
