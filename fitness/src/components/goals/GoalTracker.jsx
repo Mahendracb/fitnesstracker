@@ -185,7 +185,7 @@ function GoalTracker() {
             sx={{ 
               p: 3, 
               mb: 4, 
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              backgroundColor: 'rgba(223, 208, 208, 0.9)',
               backdropFilter: 'blur(10px)'
             }}
           >
@@ -223,7 +223,7 @@ function GoalTracker() {
                       '&:hover': {
                         transform: 'translateY(-5px)',
                       },
-                      background: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${backgrounds.categoryImages[goal.category]})`,
+                      background: `linear-gradient(rgba(150, 144, 123, 0.9), rgba(255, 255, 255, 0.9)), url(${backgrounds.categoryImages[goal.category]})`,
                       backgroundSize: 'cover',
                       backgroundPosition: 'center',
                     }}
